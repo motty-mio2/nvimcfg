@@ -27,3 +27,15 @@ vim.cmd [[autocmd BufWritePost plugins.lua PackerCompile]]
 
 require 'lsp'
 require 'treesitter'
+
+require'cmp'.setup.cmdline(':', {
+  sources = {
+    { name = 'cmdline' }
+  }
+})
+
+require'cmp'.setup.cmdline('/', {
+  sources = {
+    { name = 'buffer' }
+  }
+})

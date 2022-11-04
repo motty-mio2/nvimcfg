@@ -6,9 +6,9 @@ require('mason-lspconfig').setup({
 
 require('mason-tool-installer').setup({
     ensure_installed = {
-    "bash-language-server", "clangd", "pyright", "svls", -- LSP
+    "pyright", "svls", -- LSP
     "flake8", "mypy", "shellcheck", -- Linter
-    "black", "isort", "shfmt", "yamlfmt" -- Formatter
+    "black", "isort", "yamlfmt" -- Formatter
     }
 })
 
