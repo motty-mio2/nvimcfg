@@ -5,8 +5,7 @@ require('mason-lspconfig').setup({
 })
 
 require('mason-tool-installer').setup({
-    ensure_installed = {
-    "bash-language-server", "clangd", "pyright", "svls", -- LSP
+    ensure_installed = {"bash-language-server", "clangd", "pyright", "svls", -- LSP
     "flake8", "mypy", "shellcheck", -- Linter
     "black", "isort", "shfmt", "yamlfmt" -- Formatter
     }
@@ -23,12 +22,35 @@ require('mason-lspconfig').setup_handlers({function(server)
         capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
     }
     require('lspconfig')[server].setup(opt)
+    local virtual_env_dirctory = vim.trim(vim.fn.system("poetry env info | grep Path: | cut -d':' -f2"))
+    local python_path = 'python'
+
+    -- 現在のディレクトリに対応するvirtualenvがあるかのチェック
+    if #vim.split(virtual_env_dirctory, '\n') == 1 then
+        if vim.fn.has('unix') or vim.fn.has('mac') then
+            python_path = string.format("%s/bin/python", virtual_env_dirctory)
+        else
+            python_path = string.format("%s/Script/python", virtual_env_dirctory)
+        end
+    end
+
+    require('lspconfig').pyright.setup {
+        settings = {
+            python = {
+                venvPath = ".",
+                pythonPath = python_path,
+                analysis = {
+                    extraPaths = {"."}
+                }
+            }
+        }
+    }
 end})
 
 -- 2. build-in LSP function
 -- keyboard shortcut
 vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>')
-vim.keymap.set('n', 'gf', '<cmd>lua vim.lsp.buf.formatting()<CR>')
+vim.keymap.set('n', 'gf', '<cmd>lua vim.lsp.buf.format()<CR>')
 vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>')
 vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>')
 vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>')
